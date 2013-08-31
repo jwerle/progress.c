@@ -1,4 +1,4 @@
-progress.h
+progress.c
 -----
 
 ## api/example
