@@ -1,5 +1,5 @@
 
-CFLAGS = -std=c99 -lm -I deps -I include -Wall
+CFLAGS = -std=c99 -I. -Wall
 
 all: clean test
 	@:
