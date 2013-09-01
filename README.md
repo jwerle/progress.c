@@ -1,7 +1,7 @@
 progress.h
 -----
 
-Simple progress bar display for the terminal
+Simple progress bar display for the terminal inspired by [node-progress](https://github.com/visionmedia/node-progress)
 
 ## usage
 
