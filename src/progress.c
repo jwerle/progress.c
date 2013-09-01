@@ -3,49 +3,72 @@
 
 char *
 itoa (int n) {
-  char *s;
+  char *s = "";
   sprintf(s, "%d", n);
   return s;
 }
 
 char *
 ftoa (double n) {
-  char *s;
+  char *s = "";
   sprintf(s, "%.1f", n);
   return s;
 }
 
-char *replace_str(const char *str, const char *old, const char *new) {
-  char *ret, *r;
-  const char *p, *q;
-  size_t oldlen = strlen(old);
-  size_t count, retlen, newlen = strlen(new);
-  if (oldlen != newlen) {
-    for (count = 0, p = str; (q = strstr(p, old)) != NULL; p = q + oldlen)
-      count++;
-      /* this is undefined if p - str > PTRDIFF_MAX */
-      retlen = p - str + strlen(p) + count * (newlen - oldlen);
-  } else {
-    retlen = strlen(str);
+#if __STDC_VERSION__ >= 199901L
+#define C99
+char *
+strdup (const char *str) {
+  char *cpy = NULL;
+
+  if (str) {
+    cpy = malloc(strlen(str)+1);
+    if (cpy) strcpy(cpy, str);
   }
 
+  return cpy;
+}
+#endif
 
+char *
+replace_str (char *strbuf, char *strold, char *strnew) {
+  char *strret, *p = NULL;
+  char *posnews, *posold;
+  size_t szold = strlen(strold);
+  size_t sznew = strlen(strnew);
+  size_t n = 1;
 
-  if ((ret = malloc(retlen + 1)) == NULL)
-    return NULL;
+  if (!strbuf) return NULL;
+  if (!strold || !strnew || !(p = strstr(strbuf, strold)))
+     return strdup(strbuf);
 
-  for (r = ret, p = str; (q = strstr(p, old)) != NULL; p = q + oldlen) {
-    /* this is undefined if q - p > PTRDIFF_MAX */
-    ptrdiff_t l = q - p;
-    memcpy(r, p, l);
-    r += l;
-    memcpy(r, new, newlen);
-    r += newlen;
+  while (n > 0) {
+    if (!(p = strstr(p+1, strold))) break;
+    else n++;
   }
 
-  strcpy(r, p);
+  strret = (char *) malloc(strlen(strbuf) - (n * szold )+ (n * sznew) + 1);
+  p = strstr(strbuf, strold);
+  strncpy(strret, strbuf, (p-strbuf));
+  strret[p-strbuf] = 0;
+  posold = p+szold;
+  posnews = strret+(p-strbuf);
+  strcpy(posnews, strnew);
+  posnews += sznew;
 
-  return ret;
+  while (n > 0) {
+    if (!(p = strstr(posold, strold)))
+      break;
+    strncpy(posnews, posold, p-posold);
+    posnews[p-posold] = 0;
+    posnews += (p-posold);
+    strcpy(posnews, strnew);
+    posnews += sznew;
+    posold = p+szold;
+  }
+
+  strcpy(posnews, posold);
+  return strret;
 }
 
 progress_t *
@@ -55,6 +78,8 @@ progress_new (int total, size_t width) {
   progress->started = false;
   progress->finished = false;
   progress->value = 0;
+  progress->elapsed = 0;
+  progress->start = 0;
   progress->listener_count = 0;
   progress->bar_char = "=";
   progress->bg_bar_char = "-";
@@ -123,19 +148,21 @@ bool
 progress_tick (progress_t *progress, int value) {
   if (progress->finished) return false;
   progress->value += value;
+  time_t now = time(NULL);
 
-  progress->elapsed = difftime(time(NULL), progress->start);
   if (progress->value > progress->total)
     progress->value = progress->total;
 
   if (!progress->started) {
     progress->started = true;
     progress->start = time(NULL);
+
     progress_event_t *event = progress_event_new(PROGRESS_EVENT_START);
     progress_data_t *data = progress_data_new(progress, value);
     progress_emit(progress, event, data);
   }
 
+  progress->elapsed = difftime(now, progress->start);
   progress_event_t *event = progress_event_new(PROGRESS_EVENT_PROGRESS);
   progress_data_t *data = progress_data_new(progress, value);
   progress_emit(progress, event, data);
@@ -160,8 +187,13 @@ progress_write (progress_t *progress) {
   int complete = round(width * ((double) progress->value / (double) progress->total));
   int incomplete = width - (complete);
   double elapsed = progress->elapsed;
-  char *fmt = malloc(sizeof(char));
+  char *fmt = malloc(512 * sizeof(char));
   char *bar = malloc((complete + incomplete) * sizeof(char));
+  char *percent_str = malloc(sizeof(char));
+  char *elapsed_str = malloc(sizeof(char));
+
+  sprintf(percent_str, "%d%%", percent);
+  sprintf(elapsed_str, "%.1fs", elapsed);
 
   strcpy(fmt, "");
   strcat(fmt, progress->fmt);
@@ -179,17 +211,18 @@ progress_write (progress_t *progress) {
     }
   }
 
-  // get a new reference
-  fmt = replace_str(fmt,"`", "");
   fmt = replace_str(fmt, ":bar", bar);
-  fmt = replace_str(fmt, ":percent", strcat(itoa(percent), "%"));
-  fmt = replace_str(fmt, ":elapsed", strcat(ftoa(elapsed), "s"));
+  fmt = replace_str(fmt, ":percent", percent_str);
+  fmt = replace_str(fmt, ":elapsed", elapsed_str);
 
   printf("%c[2K", 27);
   printf("\r%s", fmt);
 
   fflush(stdout);
   free(bar);
+  free(percent_str);
+  free(elapsed_str);
+  free(fmt);
 }
 
 void

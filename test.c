@@ -24,21 +24,21 @@ main (void) {
 
   // tick progress
   progress_tick(progress, 10);
-  usleep(200000);
+  sleep(1);
   progress_tick(progress, 30);
-  usleep(200000);
+  sleep(1);
   progress_tick(progress, 5);
-  usleep(200000);
+  sleep(1);
   progress_tick(progress, 10);
-  usleep(200000);
+  sleep(1);
   progress_tick(progress, 20);
-  usleep(200000);
+  sleep(1);
   progress_tick(progress, 10);
-  usleep(200000);
+  sleep(1);
   progress_tick(progress, 5);
-  usleep(200000);
+  sleep(1);
   progress_tick(progress, 10);
-  usleep(200000);
+  sleep(1);
 
 }
 

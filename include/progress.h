@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include <sys/time.h>
+#include <time.h>
 #include <math.h>
 
 #define PROGRESS_MAX_LISTENER_POOL 32
