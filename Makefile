@@ -1,5 +1,4 @@
 
-SRC = src/progress.c
 CFLAGS = -std=c99 -lm -I deps -I include -Wall
 
 all: clean test
