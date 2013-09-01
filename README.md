@@ -1,7 +1,49 @@
 progress.h
 -----
 
-## api/example
+Simple progress bar display for the terminal
+
+## usage
+
+```c
+#include <progress.h>
+```
+
+## example
+
+```c
+
+#include <progress.h>
+
+void
+on_progress (progress_data_t *data);
+
+int
+main (void) {
+  progress_t *progress = progress_new(100, 60);
+  progress->fmt = "progress [:bar] :percent :elapsed";
+   
+  // listen for progress
+  progress_on(progress, PROGRESS_EVENT_PROGRESS, on_progress);
+  
+  // tick progress
+  progress_tick(progress, 10);
+}
+
+void
+on_progress (progress_data_t *data) {
+  progress_write(data->holder);
+}
+
+```
+
+**output**
+
+```
+progress [======------------------------------------------------------] 10% 0.0s
+```
+
+## api
 
 ### progress_new(total, width);
 
@@ -58,3 +100,6 @@ progress_write (progress_t *progress);
 void
 progress_free (progress_t *progress);
 ```
+
+## license
+MIT
