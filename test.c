@@ -28,18 +28,15 @@ main (void) {
   progress_tick(progress, 30);
   sleep(1);
   progress_tick(progress, 5);
-  sleep(1);
   progress_tick(progress, 10);
   sleep(1);
   progress_tick(progress, 20);
   sleep(1);
   progress_tick(progress, 10);
-  sleep(1);
   progress_tick(progress, 5);
-  sleep(1);
   progress_tick(progress, 10);
-  sleep(1);
 
+  progress_free(progress);
 }
 
 void

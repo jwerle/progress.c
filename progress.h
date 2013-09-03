@@ -66,6 +66,9 @@ progress_new (int total, size_t width);
 progress_event_t *
 progress_event_new(progress_event_type_t type);
 
+void
+progress_event_free (progress_event_t *event);
+
 progress_event_listener_t *
 progress_event_listener_new (progress_event_t *event, progress_cb_t cb);
 
@@ -74,6 +77,9 @@ progress_event_listener_free (progress_event_listener_t *listener);
 
 progress_data_t *
 progress_data_new (progress_t *holder, int value);
+
+void
+progress_data_free (progress_data_t *data);
 
 bool
 progress_on (progress_t *progress, progress_event_type_t event, progress_cb_t cb);
@@ -195,6 +201,11 @@ progress_event_new (progress_event_type_t type) {
   return event;
 }
 
+void
+progress_event_free (progress_event_t *event) {
+  //if (event) free(event);
+}
+
 progress_event_listener_t *
 progress_event_listener_new (progress_event_t *event, progress_cb_t cb) {
   progress_event_listener_t *listener = malloc(sizeof(progress_event_listener_t));
@@ -202,6 +213,13 @@ progress_event_listener_new (progress_event_t *event, progress_cb_t cb) {
   listener->event = event;
   listener->handle = cb;
   return listener;
+}
+
+void
+progress_event_listener_free (progress_event_listener_t *listener) {
+  if (!listener) return;
+  if (listener->data) progress_data_free(listener->data);
+  // if (listener->event) progress_event_free(listener->event);
 }
 
 progress_data_t *
@@ -214,9 +232,8 @@ progress_data_new (progress_t *holder, int value) {
 }
 
 void
-progress_event_listener_free (progress_event_listener_t *listener) {
-  free(listener->data);
-  free(listener);
+progress_data_free (progress_data_t *data) {
+ // if (data) free(data);
 }
 
 bool
@@ -325,7 +342,11 @@ progress_write (progress_t *progress) {
 
 void
 progress_free (progress_t *progress) {
-  free(progress);
+  for (int i = 0; i < progress->listener_count; ++i) {
+    progress_event_listener_free(&progress->listeners[i]);
+  }
+
+ // free(progress);
 }
 
 
