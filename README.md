@@ -43,6 +43,66 @@ on_progress (progress_data_t *data) {
 progress [======------------------------------------------------------] 10% 0.0s
 ```
 
+## usage
+
+### setup
+
+Create a new `progress_t *` pointer with a given `int` total and progress bar `size_t` width.
+
+```c
+int total = 100;
+size_t width = 20;
+progress_t *progress = progress_new
+```
+
+### format
+
+You can define the output to stdout by setting the `char * fmt` member on the `progress_t *` pointer. Available tokens in the format string are:
+
+* `:bar` - represents progress bar
+* `:percent` - represents current progress percent
+* `:elapsed` - represents current elapsed time in seconds as a float
+
+```c
+progress->fmt = "  downloading :percent (:elapsed) :bar";
+```
+
+The characters used to draw the complete and incomplete parts of the
+progress bar can be set too.
+
+```c
+progress->bar_char = ".";
+progress->bg_bar_char = " ";
+```
+
+### events
+
+Bind function callbacks to events where an `progress_event_type_t` event is:
+
+* `PROGRESS_EVENT_START` - represents an event type for when progress has begun
+* `PROGRESS_EVENT_PROGRESS` - represents an event type for when progress has ticked
+* `PROGRESS_EVENT_END` - represents an event type for when progress has completed
+
+A valid callback has the following signature which accepts a `progress_data_t *` pointer.
+
+```c
+void callback (progress_data_t *data);
+```
+
+```c
+progress_on(progress, PROGRESS_EVENT_START, on_progress_start);
+progress_on(progress, PROGRESS_EVENT_PROGRESS, on_progress);
+progress_on(progress, PROGRESS_EVENT_END, on_progress_end);
+```
+
+### ticks
+
+To increment progress the `progress_t *` pointer must be passded to `progress_tick`. If the total has been met then any function pointer bound to `PROGRESS_EVENT_END` will be called in the order they were bound.
+
+```c
+progress_tick(progress, 42);
+```
+
 ## api
 
 ### progress_new(total, width);
