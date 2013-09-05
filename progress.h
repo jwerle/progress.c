@@ -14,7 +14,7 @@
 /**
  * `progress.c` version
  */
-#define PROGRESS_VERSION 0.0.1
+#define PROGRESS_VERSION 0.0.2
 #define PROGRESS_MAX_LISTENER_POOL 32
 
 struct progress_data;
