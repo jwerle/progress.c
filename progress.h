@@ -96,6 +96,8 @@ progress_write (progress_t *progress);
 void
 progress_free (progress_t *progress);
 
+void
+progress_inspect (progress_t *progress);
 
 
 
@@ -349,5 +351,21 @@ progress_free (progress_t *progress) {
  // free(progress);
 }
 
+void
+progress_inspect (progress_t *progress) {
+  printf("\n#progress =>\n");
+  printf("    .value: %d\n", progress->value);
+  printf("    .total: %d\n", progress->total);
+  printf("    .listener_count: %d\n", progress->listener_count);
+  printf("    .elapsed: %f\n", progress->elapsed);
+  printf("    .start: %d\n", (int)progress->start);
+  printf("    .width: %d\n", (int)progress->width);
+  printf("    .started: %s\n", progress->started? "true" : "false");
+  printf("    .finished: %s\n", progress->finished? "true" : "false");
+  printf("    .bar_char: '%s'\n", progress->bar_char);
+  printf("    .bg_bar_char: '%s'\n", progress->bg_bar_char);
+  printf("    .fmt: '%s'\n", progress->fmt);
+  printf("    .listeners[%d]\n", progress->listener_count);
+}
 
 #endif

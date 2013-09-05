@@ -26,15 +26,16 @@ main (void) {
   progress_tick(progress, 10);
   sleep(1);
   progress_tick(progress, 30);
-  sleep(1);
   progress_tick(progress, 5);
   progress_tick(progress, 10);
-  sleep(1);
   progress_tick(progress, 20);
   sleep(1);
   progress_tick(progress, 10);
   progress_tick(progress, 5);
   progress_tick(progress, 10);
+
+  // inspect
+  progress_inspect(progress);
 
   progress_free(progress);
 }
