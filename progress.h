@@ -362,9 +362,9 @@ progress_inspect (progress_t *progress) {
   printf("    .width: %d\n", (int)progress->width);
   printf("    .started: %s\n", progress->started? "true" : "false");
   printf("    .finished: %s\n", progress->finished? "true" : "false");
-  printf("    .bar_char: '%s'\n", progress->bar_char);
-  printf("    .bg_bar_char: '%s'\n", progress->bg_bar_char);
-  printf("    .fmt: '%s'\n", progress->fmt);
+  printf("    .bar_char: \"%s\"\n", progress->bar_char);
+  printf("    .bg_bar_char: \"%s\"\n", progress->bg_bar_char);
+  printf("    .fmt: \"%s\"\n", progress->fmt);
   printf("    .listeners[%d]\n", progress->listener_count);
 }
 

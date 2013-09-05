@@ -103,6 +103,32 @@ To increment progress the `progress_t *` pointer must be passded to `progress_ti
 progress_tick(progress, 42);
 ```
 
+### inspect
+
+You can inspect your `progress_t *` struct with `progress_inspect(progress);`.
+
+```c
+progress_inspect(progress);
+```
+
+***output***
+
+```
+#progress =>
+    .value: 100
+    .total: 100
+    .listener_count: 3
+    .elapsed: 2.000000
+    .start: 1378344826
+    .width: 60
+    .started: true
+    .finished: true
+    .bar_char: "="
+    .bg_bar_char: "-"
+    .fmt: "progress [:bar] :percent :elapsed"
+    .listeners[3]
+```
+
 ## api
 
 ### progress_new(total, width);
