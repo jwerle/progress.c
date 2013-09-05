@@ -107,20 +107,6 @@ progress_inspect (progress_t *progress);
  */
 
 
-char *
-itoa (int n) {
-  char *s = "";
-  sprintf(s, "%d", n);
-  return s;
-}
-
-char *
-ftoa (double n) {
-  char *s = "";
-  sprintf(s, "%.1f", n);
-  return s;
-}
-
 #if __STDC_VERSION__ >= 199901L
 #define C99
 char *
@@ -136,7 +122,7 @@ strdup (const char *str) {
 }
 #endif
 
-char *
+static char *
 replace_str (char *strbuf, char *strold, char *strnew) {
   char *strret, *p = NULL;
   char *posnews, *posold;
