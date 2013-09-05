@@ -328,6 +328,8 @@ progress_write (progress_t *progress) {
     }
   }
 
+  bar[i] = '\0';
+
   fmt = replace_str(fmt, ":bar", bar);
   fmt = replace_str(fmt, ":percent", percent_str);
   fmt = replace_str(fmt, ":elapsed", elapsed_str);

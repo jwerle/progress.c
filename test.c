@@ -15,7 +15,9 @@ int
 main (void) {
   // init with 
   progress_t *progress = progress_new(100, 60);
-  progress->fmt = "progress [:bar] :percent :elapsed";
+  progress->fmt = "    progress (:percent) => {:bar} [:elapsed]";
+  progress->bg_bar_char = " ";
+  progress->bar_char = ".";
 
   // set events
   progress_on(progress, PROGRESS_EVENT_START, on_progress_start);
