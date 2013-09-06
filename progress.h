@@ -9,7 +9,6 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <time.h>
-#include <math.h>
 
 /**
  * `progress.c` version
@@ -287,7 +286,7 @@ progress_write (progress_t *progress) {
   int i = 0;
   int width = (int) progress->width;
   int percent = 100 * ((double) progress->value / (double) progress->total);
-  int complete = round(width * ((double) progress->value / (double) progress->total));
+  int complete = (width * ((double) progress->value / (double) progress->total));
   int incomplete = width - (complete);
   double elapsed = progress->elapsed;
   char *fmt = malloc(512 * sizeof(char));
