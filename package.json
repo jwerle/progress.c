@@ -1,6 +1,6 @@
 {
   "name": "progress",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repo": "jwerle/progress.h",
   "description": "Simple progress bar display for the terminal",
   "keywords": ["terminal", "tty", "progress"],
