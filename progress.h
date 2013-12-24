@@ -1,6 +1,5 @@
-
-#ifndef _PROGRESS_H_
-#define _PROGRESS_H_ 1
+#ifndef PROGRESS_H
+#define PROGRESS_H 1
 
 #include <unistd.h>
 #include <stdio.h>
