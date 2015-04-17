@@ -86,6 +86,13 @@ bool
 progress_emit (progress_t *progress, progress_event_t *event, progress_data_t *data);
 
 bool
+progress_change_value (progress_t *progress, int value, bool increment);
+
+
+bool
+progress_value (progress_t *progress, int value);
+
+bool
 progress_tick (progress_t *progress, int value);
 
 void
@@ -247,8 +254,22 @@ progress_emit (progress_t *progress, progress_event_t *event, progress_data_t *d
 
 bool
 progress_tick (progress_t *progress, int value) {
+  return progress_change_value(progress, value, true);
+}
+
+bool
+progress_value (progress_t *progress, int value) {
+  return progress_change_value(progress, value, false);
+}
+
+bool
+progress_change_value (progress_t *progress, int value, bool increment) {
   if (progress->finished) return false;
-  progress->value += value;
+  if(increment == true) { 
+    progress->value += value;
+  } else {
+    progress->value=value;
+  }
   time_t now = time(NULL);
 
   if (progress->value > progress->total)

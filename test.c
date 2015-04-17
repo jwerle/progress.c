@@ -40,6 +40,40 @@ main (void) {
   progress_inspect(progress);
 
   progress_free(progress);
+
+
+  progress = progress_new(100, 60);
+  progress->fmt = "    progress (:percent) => {:bar} [:elapsed]";
+  progress->bg_bar_char = " ";
+  progress->bar_char = ".";
+
+  // set events
+  progress_on(progress, PROGRESS_EVENT_START, on_progress_start);
+  progress_on(progress, PROGRESS_EVENT_PROGRESS, on_progress);
+  progress_on(progress, PROGRESS_EVENT_END, on_progress_end);
+
+  // tick progress
+  progress_value(progress, 2);
+  sleep(1);
+  progress_value(progress, 5);
+  progress_value(progress, 10);
+  sleep(1);
+  progress_value(progress, 15);
+  progress_value(progress, 20);
+  sleep(1);
+  progress_value(progress, 30);
+  sleep(1);
+  progress_value(progress, 40);
+  sleep(1);
+  progress_value(progress, 100);
+
+  // inspect
+  progress_inspect(progress);
+
+  progress_free(progress);
+
+
+
 }
 
 void
