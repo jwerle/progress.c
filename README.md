@@ -103,6 +103,15 @@ To increment progress the `progress_t *` pointer must be passded to `progress_ti
 progress_tick(progress, 42);
 ```
 
+### value
+
+to set the progress bar to specific value you can call. If the total has been met then any function pointer bound to `PROGRESS_EVENT_END` will be called in the order they were bound.
+
+```c
+progress_value(progress, 20);
+```
+
+
 ### inspect
 
 You can inspect your `progress_t *` struct with `progress_inspect(progress);`.
@@ -264,6 +273,25 @@ progress_tick (progress_t *progress, int value);
 ```c
 progress_tick(progress, 16);
 ```
+
+
+
+### progress_value(progress, value);
+
+set progress value
+
+```c
+bool
+progress_value (progress_t *progress, int value);
+```
+
+***example***
+
+```c
+progress_value(progress, 16);
+```
+
+
 
 ### progress_write(progress);
 
