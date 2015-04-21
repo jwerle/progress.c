@@ -1,5 +1,5 @@
 
-CFLAGS = -std=c99 -I. -Wall
+CFLAGS = -std=c99 -I. -Wall -g
 
 all: clean test
 	@:

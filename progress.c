@@ -24,13 +24,16 @@ static char *
 replace_str (char *strbuf, char *strold, char *strnew) {
   char *strret, *p = NULL;
   char *posnews, *posold;
-  size_t szold = strlen(strold);
-  size_t sznew = strlen(strnew);
-  size_t n = 1;
 
   if (!strbuf) return NULL;
   if (!strold || !strnew || !(p = strstr(strbuf, strold)))
      return strdup(strbuf);
+
+  size_t szold = strlen(strold);
+  size_t sznew = strlen(strnew);
+  size_t n = 1;
+
+  
 
   while (n > 0) {
     if (!(p = strstr(p+1, strold))) break;
@@ -58,6 +61,7 @@ replace_str (char *strbuf, char *strold, char *strnew) {
   }
 
   strcpy(posnews, posold);
+  free(strbuf);
   return strret;
 }
 
@@ -89,7 +93,7 @@ progress_event_new (progress_event_type_t type) {
 
 void
 progress_event_free (progress_event_t *event) {
-  //if (event) free(event);
+  if (event) free(event);
 }
 
 progress_event_listener_t *
@@ -105,7 +109,8 @@ void
 progress_event_listener_free (progress_event_listener_t *listener) {
   if (!listener) return;
   if (listener->data) progress_data_free(listener->data);
-  // if (listener->event) progress_event_free(listener->event);
+  //if (listener->event) progress_event_free(listener->event);
+  //free(listener);
 }
 
 progress_data_t *
@@ -124,9 +129,11 @@ progress_data_free (progress_data_t *data) {
 
 bool
 progress_on (progress_t *progress, progress_event_type_t event, progress_cb_t cb) {
-  progress_event_listener_t *listener = progress_event_listener_new(progress_event_new(event), cb);
+  progress_event_t * ev = progress_event_new(event);
+  progress_event_listener_t *listener = progress_event_listener_new(ev, cb);
   if (!listener) return false;
-  progress->listeners[progress->listener_count++] = *listener;
+  memcpy(&progress->listeners[progress->listener_count++], listener, sizeof(progress_event_listener_t));
+  free(listener);
   return true;
 }
 
@@ -175,6 +182,9 @@ progress_change_value (progress_t *progress, int value, bool increment) {
     progress_event_t *event = progress_event_new(PROGRESS_EVENT_START);
     progress_data_t *data = progress_data_new(progress, value);
     progress_emit(progress, event, data);
+    
+    free(event);
+    free(data);
   }
 
   progress->elapsed = difftime(now, progress->start);
@@ -182,13 +192,19 @@ progress_change_value (progress_t *progress, int value, bool increment) {
   progress_data_t *data = progress_data_new(progress, value);
   progress_emit(progress, event, data);
 
+  free(event);
+  free(data);
+
+
   if (progress->value >= progress->total) {
     progress->finished = true;
     progress->value = progress->total;
     progress_event_t *event = progress_event_new(PROGRESS_EVENT_END);
     progress_data_t *data = progress_data_new(progress, value);
     progress_emit(progress, event, data);
-    progress_free(progress);
+   
+    free(event);
+    free(data);
   }
 
   return true;
@@ -204,8 +220,8 @@ progress_write (progress_t *progress) {
   double elapsed = progress->elapsed;
   char *fmt = malloc(512 * sizeof(char));
   char *bar = malloc((complete + incomplete) * sizeof(char));
-  char *percent_str = malloc(sizeof(char));
-  char *elapsed_str = malloc(sizeof(char));
+  char *percent_str = malloc(sizeof(char)*20);
+  char *elapsed_str = malloc(sizeof(char)*20);
 
   sprintf(percent_str, "%d%%", percent);
   sprintf(elapsed_str, "%.1fs", elapsed);
@@ -246,10 +262,11 @@ void
 progress_free (progress_t *progress) {
   int i;
   for (i = 0; i < progress->listener_count; ++i) {
-    progress_event_listener_free(&progress->listeners[i]);
+    progress_event_free(progress->listeners[i].event);
+
   }
 
- // free(progress);
+  free(progress);
 }
 
 void
