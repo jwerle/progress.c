@@ -1,11 +1,11 @@
 
-CFLAGS = -std=c99 -I. -Wall
+CFLAGS = -std=c99 -I. -Wall -g
 
 all: clean test
 	@:
 
 test: $(SRC)
-	$(CC) $^ test.c $(CFLAGS) -o test-progress
+	$(CC) $^ progress.c test.c $(CFLAGS) -o test-progress
 	./test-progress
 
 clean:
