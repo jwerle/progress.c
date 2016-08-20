@@ -73,7 +73,21 @@ main (void) {
   progress_free(progress);
 
 
+  progress = progress_new(100, 60);
+  progress->fmt = "    progress (:percent) => {:bar} [:elapsed]";
+  progress->bg_bar_char = " ";
+  progress->bar_char = ".";
 
+  // set events
+  progress_on(progress, PROGRESS_EVENT_START, on_progress_start);
+  progress_on(progress, PROGRESS_EVENT_PROGRESS, on_progress);
+  progress_on(progress, PROGRESS_EVENT_END, on_progress_end);
+
+  for (long i = 0; i < 10000; ++i) {
+     progress_value(progress, i / 100); 
+  }
+
+  progress_free(progress);
 }
 
 void

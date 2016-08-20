@@ -20,6 +20,34 @@ strdup (const char *str) {
 }
 #endif
 
+/*
+ * Get current Unix timestamp with timespec format
+ */
+static void 
+timestamp(struct timespec *ts) {
+#ifdef __MACH__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+  clock_get_time(cclock, &mts);
+  mach_port_deallocate(mach_task_self(), cclock);
+  ts->tv_sec = mts.tv_sec;
+  ts->tv_nsec = mts.tv_nsec;
+#else
+  clock_gettime(CLOCK_REALTIME, ts);
+#endif
+}
+
+/*
+ * Return the difference of two timespec (millisecond)
+ */
+static double 
+timespec_diff(struct timespec start, struct timespec end) {
+  double d_start = 1000 * ((double)start.tv_sec + 1.0e-9 * start.tv_nsec);
+  double d_end = 1000 * ((double)end.tv_sec + 1.0e-9 * end.tv_nsec);
+  return d_start - d_end;
+}
+
 static char *
 replace_str (char *strbuf, char *strold, char *strnew) {
   char *strret, *p = NULL;
@@ -73,7 +101,6 @@ progress_new (int total, size_t width) {
   progress->finished = false;
   progress->value = 0;
   progress->elapsed = 0;
-  progress->start = 0;
   progress->listener_count = 0;
   progress->bar_char = "=";
   progress->bg_bar_char = "-";
@@ -170,14 +197,19 @@ progress_change_value (progress_t *progress, int value, bool increment) {
   } else {
     progress->value=value;
   }
-  time_t now = time(NULL);
 
+  struct timespec ts_now;
+  timestamp(&ts_now);
+  
   if (progress->value > progress->total)
     progress->value = progress->total;
 
   if (!progress->started) {
     progress->started = true;
-    progress->start = time(NULL);
+    struct timespec ts_start;
+    timestamp(&ts_start);
+    progress->start = ts_start;
+  
 
     progress_event_t *event = progress_event_new(PROGRESS_EVENT_START);
     progress_data_t *data = progress_data_new(progress, value);
@@ -187,7 +219,7 @@ progress_change_value (progress_t *progress, int value, bool increment) {
     free(data);
   }
 
-  progress->elapsed = difftime(now, progress->start);
+  progress->elapsed = timespec_diff(ts_now, progress->start);  
   progress_event_t *event = progress_event_new(PROGRESS_EVENT_PROGRESS);
   progress_data_t *data = progress_data_new(progress, value);
   progress_emit(progress, event, data);
@@ -224,7 +256,12 @@ progress_write (progress_t *progress) {
   char *elapsed_str = malloc(sizeof(char)*20);
 
   sprintf(percent_str, "%d%%", percent);
-  sprintf(elapsed_str, "%.1fs", elapsed);
+  if (elapsed > 1000) {
+    sprintf(elapsed_str, "%.2fs", elapsed/1000);
+  } else {
+    sprintf(elapsed_str, "%.0fms", elapsed);
+  }
+  
 
   strcpy(fmt, "");
   strcat(fmt, progress->fmt);
@@ -276,7 +313,7 @@ progress_inspect (progress_t *progress) {
   printf("    .total: %d\n", progress->total);
   printf("    .listener_count: %d\n", progress->listener_count);
   printf("    .elapsed: %f\n", progress->elapsed);
-  printf("    .start: %d\n", (int)progress->start);
+  printf("    .start: %ld.%ld\n", (long)progress->start.tv_sec, progress->start.tv_nsec);  
   printf("    .width: %d\n", (int)progress->width);
   printf("    .started: %s\n", progress->started? "true" : "false");
   printf("    .finished: %s\n", progress->finished? "true" : "false");

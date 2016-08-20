@@ -9,6 +9,14 @@
 #include <stdbool.h>
 #include <time.h>
 
+/*
+ * for macOS
+ */
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
 /**
  * `progress.c` version
  */
@@ -42,7 +50,7 @@ typedef struct progress {
   int listener_count;
   double elapsed;
   size_t width;
-  time_t start;
+  struct timespec start;
   bool started;
   bool finished;
   char *bar_char;
