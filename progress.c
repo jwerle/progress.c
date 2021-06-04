@@ -9,11 +9,10 @@
 #define C99
 char *
 strdup (const char *str) {
-  char *cpy = NULL;
+  char *cpy = malloc(strlen(str)+1);
 
-  if (str) {
-    cpy = malloc(strlen(str)+1);
-    if (cpy) strcpy(cpy, str);
+  if (cpy) {
+    strcpy(cpy, str);
   }
 
   return cpy;

@@ -1,5 +1,8 @@
-#ifndef PROGRESS_H
-#define PROGRESS_H 1
+#ifndef CLIB_PROGRESS_H
+#define CLIB_PROGRESS_H 1
+
+#define _GNU_SOURCE
+#define _POSIX_C_SOURCE 199309L
 
 #include <unistd.h>
 #include <stdio.h>
@@ -7,6 +10,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <sys/time.h>
 #include <time.h>
 
 /*
